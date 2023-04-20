@@ -26,10 +26,13 @@ func (p promptsRepository) Add(model *dsl.PromptsModel, models []*dsl.PromptsInd
 		if err != nil {
 			return err
 		}
-		_, err = tx.InsertInto(dsl.Medias).Models(model2).Execute()
-		if err != nil {
-			return err
+		if len(model2) > 0 {
+			_, err = tx.InsertInto(dsl.Medias).Models(model2).Execute()
+			if err != nil {
+				return err
+			}
 		}
+
 		return nil
 	})
 }
