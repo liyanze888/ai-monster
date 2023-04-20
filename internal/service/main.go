@@ -2,6 +2,7 @@ package service
 
 import (
 	"github.com/gin-gonic/gin"
+	"monster-base-backend/internal/service/common"
 	"monster-base-backend/internal/service/ppts"
 )
 
@@ -10,7 +11,9 @@ type StartService struct {
 }
 
 func (s *StartService) Start() {
-	ppts.NewPromptsService().Register(s.ctx)
+	commonSvc := common.NewCommonsService()
+	ppts.NewPromptsService(commonSvc).Register(s.ctx)
+	commonSvc.Register(s.ctx)
 }
 
 func NewStartService(ctx *gin.Engine) *StartService {

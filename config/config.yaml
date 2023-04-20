@@ -1,0 +1,13 @@
+artCategory: 3D,Accessory,Animal,Anime,Art,Avtar,Building,Cartoon
+chatgptCategory: 3D,Accessory,Animal,Anime,Art,Avtar,Building,Cartoon
+
+
+database:
+  host: localhost
+  port: 3306
+  user: root
+  pass:
+  name: monster_base_backend
+redis:
+  host: localhost:6379
+  db: 3

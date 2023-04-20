@@ -7,9 +7,13 @@ require (
 	go.uber.org/zap v1.21.0
 )
 
+require github.com/bwmarrin/snowflake v0.3.0 // indirect
+
 require (
 	github.com/fsnotify/fsnotify v1.6.0 // indirect
+	github.com/go-sql-driver/mysql v1.6.0
 	github.com/hashicorp/hcl v1.0.0 // indirect
+	github.com/lqs/sqlingo v0.11.1
 	github.com/magiconair/properties v1.8.7 // indirect
 	github.com/mitchellh/mapstructure v1.5.0 // indirect
 	github.com/spf13/afero v1.9.3 // indirect
@@ -20,6 +24,7 @@ require (
 	go.uber.org/atomic v1.9.0 // indirect
 	go.uber.org/multierr v1.8.0 // indirect
 	gopkg.in/ini.v1 v1.67.0 // indirect
+	github.com/bwmarrin/snowflake v0.3.0
 )
 
 require (
