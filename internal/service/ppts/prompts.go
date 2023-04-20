@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/go-redis/redis/v8"
-	"log"
 	dsl "monster-base-backend/internal/generated/dsl"
 	"monster-base-backend/internal/service/base"
 	"monster-base-backend/internal/service/common"
@@ -67,17 +66,33 @@ var ArtModelRef = map[string]int32{
 }
 
 type ArtContentJsonModel struct {
+	Title            string `json:"title"`
+	Content          string `json:"content"`
+	Seed             string `json:"seed"`
+	GuidanceScale    string `json:"guidanceScale"`
+	Steps            string `json:"steps"`
+	Sampler          string `json:"sampler"`
+	ExtraInstruction string `json:"extraInstruction"`
 }
 
 var ArtVersionRef = map[string]int32{}
 
-func (p promptService) addArt(model AddModel) error {
+func (p *promptService) addArt(model AddModel) error {
 	id, err := pkg.GenerateInt64()
 	if err != nil {
 		return err
 	}
 	timestamp := time.Now().UnixMilli()
-	jsonModel := &ArtContentJsonModel{}
+	jsonModel := &ArtContentJsonModel{
+		Title:            model.ArtModel.Title,
+		Content:          model.ArtModel.Content,
+		Seed:             model.ArtModel.Seed,
+		GuidanceScale:    model.ArtModel.GuidanceScale,
+		Steps:            model.ArtModel.Steps,
+		Sampler:          model.ArtModel.Sampler,
+		ExtraInstruction: model.ArtModel.ExtraInstruction,
+	}
+
 	marshal, err := json.Marshal(jsonModel)
 	if err != nil {
 		return err
@@ -95,7 +110,7 @@ func (p promptService) addArt(model AddModel) error {
 		UpdatedTime: timestamp,
 	}
 
-	categories := make([]*dsl.PromptsIndexModel, 0, len(model.ArtModel.Category))
+	categories := make([]*dsl.PromptsIndexModel, len(model.ArtModel.Category))
 	for idx, category := range model.ArtModel.Category {
 		c := &dsl.PromptsIndexModel{
 			PromptsId:   id,
@@ -111,23 +126,43 @@ func (p promptService) addArt(model AddModel) error {
 		categories[idx] = c
 	}
 
-	log.Printf("%v", prompt)
-	return nil
+	medias := make([]*dsl.MediasModel, 0)
+	for _, image := range model.ArtModel.Medias {
+		mediaId, err := pkg.GenerateInt64()
+		if err != nil {
+			return err
+		}
+		medias = append(medias, &dsl.MediasModel{
+			Id:          mediaId,
+			TargetId:    id,
+			MediaId:     image,
+			CreatedTime: timestamp,
+			UpdatedTime: timestamp,
+		})
+	}
+	return p.repo.Add(prompt, categories, medias)
 }
 
-func (p promptService) add(ctx *gin.Context) {
+func (p *promptService) add(ctx *gin.Context) {
 	var model AddModel
 	err := ctx.Bind(&model)
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, "error request")
 		return
 	}
-	ctx.JSON(http.StatusOK, "ok")
+
 	if model.Type == common.ArtType {
-		p.addArt(model)
+		err = p.addArt(model)
 	} else if model.Type == common.ChatGptType {
 
 	}
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, map[string]string{
+			"errorInfo": err.Error(),
+		})
+		return
+	}
+	ctx.JSON(http.StatusOK, "ok")
 }
 
 func (p promptService) listRecommends(ctx *gin.Context) {
@@ -139,7 +174,6 @@ func (p promptService) listRecommends(ctx *gin.Context) {
 		return
 	}
 
-	log.Printf("%v", listRequest)
 	models := make([]SimpleModel, 0)
 	for i := 0; i < 2; i++ {
 		models = append(models, SimpleModel{

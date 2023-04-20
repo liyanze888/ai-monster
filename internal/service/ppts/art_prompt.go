@@ -9,6 +9,7 @@ type ArtPromptModel struct {
 	Category         []string `json:"category"`
 	Seed             string   `json:"seed"`
 	Type             string   `json:"type"`
+	Steps            string   `json:"steps"`
 	SubModel         string   `json:"subModel"`
 	GuidanceScale    string   `json:"guidanceScale"`
 	Sampler          string   `json:"sampler"`
@@ -16,4 +17,5 @@ type ArtPromptModel struct {
 	NegativeContent  string   `json:"negativeContent"`
 	ExtraInstruction string   `json:"extraInstruction"`
 	Images           []string `json:"images"`
+	Medias           []int64  `json:"medias"`
 }

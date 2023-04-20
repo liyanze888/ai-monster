@@ -29,7 +29,7 @@ type CommonsService interface {
 type commonsService struct {
 	redisCli redis.UniversalClient
 	db       sqlingo.Database
-	// map[Type]map[SubType][Name]id
+	//map[Type]map[SubType][locale][Name]id
 	dict map[int32]map[int32]map[string]map[string]int64
 }
 
