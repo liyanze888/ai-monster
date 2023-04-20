@@ -93,8 +93,8 @@ func (c *commonsService) listCategory(ctx *gin.Context) {
 	rlt["data"] = data
 	ctx.JSON(http.StatusOK, rlt)
 	return
-
 }
+
 func (c *commonsService) init() {
 	cursor, err := c.db.SelectFrom(dsl.Dict).
 		Where(dsl.Dict.TypeId.In(ArtType, ChatGptType)).
